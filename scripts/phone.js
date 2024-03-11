@@ -1,17 +1,32 @@
-const loadPhone = async (searchText) => {
+const loadPhone = async (searchText, isShowAll) => {
     const res = await fetch(`https://openapi.programming-hero.com/api/phones?search=${searchText}`)
     const data = await res.json();
     const phones = data.data;
-    // console.log(phones);
-    displayPhones(phones);
+    console.log(phones);
+    displayPhones(phones, isShowAll);
 }
 
-const displayPhones = phones => {
+const displayPhones = (phones, isShowAll) => {
     // console.log(phones);
     // 1)
     const phoneContainer = document.getElementById('phone-container');
     // clear phone container cards
     phoneContainer.textContent = '';
+
+    // display show all button if there is more than 10 items
+    const showAllContainer = document.getElementById('show-all-container');
+    if(phones.length > 10 && !isShowAll){
+        showAllContainer.classList.remove('hidden');
+    }
+    else{
+        showAllContainer.classList.add('hidden');
+    }
+    console.log('is show all', isShowAll);
+    // console.log(phones.length);
+    // display only first 10 phones if not show all
+    if(!isShowAll){
+        phones = phones.slice(0,10);
+    }
 
     phones.forEach(phone => {
         // console.log(phone);
@@ -31,15 +46,35 @@ const displayPhones = phones => {
         `;
         // 4) append child
         phoneContainer.appendChild(phoneCard)
-    })
+    });
+
+    // hide loading infinity
+    toggleLoader(false);
 }
 
 // handle search button
-const handleSearch = () => {
+const handleSearch = (isShowAll) => {
+    toggleLoader(true);
     const searchField = document.getElementById('search-field');
     const searchText = searchField.value;
-    console.log(searchText);
-    loadPhone(searchText);
+    // console.log(searchText);
+    loadPhone(searchText, isShowAll);
 }
 
-loadPhone();
+const toggleLoader = (isLoading) => {
+    const loadingInfinity = document.getElementById('loading-infinity');
+    if(isLoading){
+        loadingInfinity.classList.remove('hidden');
+    }
+    else{
+        loadingInfinity.classList.add('hidden');
+    }
+    
+}
+
+// handle show all
+const handleShowAll = () =>{
+    handleSearch(true);
+}
+
+// loadPhone();
